@@ -1,0 +1,6 @@
+{
+  "name": "Sudoku Quest",
+  "description": "Uma jornada épica de Sudoku com estética de anime/JRPG. Resolva puzzles, derrote chefes, evolua seu personagem e desbloqueie companheiros!",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Yellow Background with Rounded Corners -->
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M20,10h68c5.52,0 10,4.48 10,10v68c0,5.52 -4.48,10 -10,10h-68c-5.52,0 -10,-4.48 -10,-10v-68c0,-5.52 4.48,-10 10,-10z" />
+    <!-- Outer White Border of Grid -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3.5"
+        android:pathData="M24,24h60v60h-60z" />
+    <!-- Major 3x3 Subgrid Divider Lines -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:pathData="M44,24v60 M64,24v60 M24,44h60 M24,64h60" />
+    <!-- Fine Grid Lines (Translucent White) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeAlpha="0.5"
+        android:strokeWidth="1.2"
+        android:pathData="M30.6,24v60 M37.3,24v60 M50.6,24v60 M57.3,24v60 M70.6,24v60 M77.3,24v60 M24,30.6h60 M24,37.3h60 M24,50.6h60 M24,57.3h60 M24,70.6h60 M24,77.3h60" />
+    <!-- Accent Highlight Cells (Filled White) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M25,25h18v18h-18z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M65,65h18v18h-18z" />
+    <!-- Contrast Yellow Dots inside highlighted cells -->
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M31,31h6v6h-6z M71,71h6v6h-6z" />
+</vector>

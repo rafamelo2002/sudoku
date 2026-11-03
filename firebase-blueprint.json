@@ -1,0 +1,159 @@
+{
+  "entities": {
+    "GameSession": {
+      "title": "GameSession",
+      "description": "Represents an in-progress or completed Sudoku game session for a user.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "UID of the owner user."
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["EASY", "MEDIUM", "HARD", "EXPERT"],
+          "description": "Difficulty level of the puzzle."
+        },
+        "initialBoard": {
+          "type": "string",
+          "description": "81-char string of the initial puzzle numbers ('0' for empty)."
+        },
+        "currentBoard": {
+          "type": "string",
+          "description": "81-char string of current player entries."
+        },
+        "solution": {
+          "type": "string",
+          "description": "81-char string of the puzzle solution."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Serialized candidate notes for cells."
+        },
+        "elapsedSeconds": {
+          "type": "integer",
+          "description": "Elapsed playtime in seconds."
+        },
+        "mistakes": {
+          "type": "integer",
+          "description": "Number of mistakes committed."
+        },
+        "maxMistakes": {
+          "type": "integer",
+          "description": "Maximum allowed mistakes before game over."
+        },
+        "isCompleted": {
+          "type": "boolean",
+          "description": "Whether the game has been solved."
+        },
+        "isPaused": {
+          "type": "boolean",
+          "description": "Whether the game is currently paused."
+        },
+        "hintsUsed": {
+          "type": "integer",
+          "description": "Number of hints used in this session."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of game creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of game update."
+        }
+      },
+      "required": [
+        "userId",
+        "difficulty",
+        "initialBoard",
+        "currentBoard",
+        "solution",
+        "elapsedSeconds",
+        "mistakes",
+        "maxMistakes",
+        "isCompleted",
+        "isPaused",
+        "hintsUsed",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserStats": {
+      "title": "UserStats",
+      "description": "Aggregate statistics of games played, won, streaks, and best times.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "UID of the user."
+        },
+        "gamesPlayed": {
+          "type": "integer",
+          "description": "Total games started or played."
+        },
+        "gamesWon": {
+          "type": "integer",
+          "description": "Total games completed successfully."
+        },
+        "bestTimeSecondsEasy": {
+          "type": "integer",
+          "description": "Fastest completion time for Easy (0 if none)."
+        },
+        "bestTimeSecondsMedium": {
+          "type": "integer",
+          "description": "Fastest completion time for Medium (0 if none)."
+        },
+        "bestTimeSecondsHard": {
+          "type": "integer",
+          "description": "Fastest completion time for Hard (0 if none)."
+        },
+        "bestTimeSecondsExpert": {
+          "type": "integer",
+          "description": "Fastest completion time for Expert (0 if none)."
+        },
+        "currentStreak": {
+          "type": "integer",
+          "description": "Current consecutive win streak."
+        },
+        "bestStreak": {
+          "type": "integer",
+          "description": "Highest recorded win streak."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last update."
+        }
+      },
+      "required": [
+        "userId",
+        "gamesPlayed",
+        "gamesWon",
+        "bestTimeSecondsEasy",
+        "bestTimeSecondsMedium",
+        "bestTimeSecondsHard",
+        "bestTimeSecondsExpert",
+        "currentStreak",
+        "bestStreak",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/games/{gameId}": {
+      "schema": {
+        "$ref": "#/entities/GameSession"
+      },
+      "description": "Player's saved and active Sudoku games."
+    },
+    "/users/{userId}/stats/{statsId}": {
+      "schema": {
+        "$ref": "#/entities/UserStats"
+      },
+      "description": "Player's lifetime Sudoku statistics."
+    }
+  }
+}

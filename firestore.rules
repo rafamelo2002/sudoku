@@ -1,0 +1,100 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidGameSession(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.difficulty in ['EASY', 'MEDIUM', 'HARD', 'EXPERT'] &&
+             data.initialBoard is string && data.initialBoard.size() == 81 &&
+             data.currentBoard is string && data.currentBoard.size() == 81 &&
+             data.solution is string && data.solution.size() == 81 &&
+             (!('notes' in data) || (data.notes is string && data.notes.size() <= 2000)) &&
+             data.elapsedSeconds is int && data.elapsedSeconds >= 0 && data.elapsedSeconds <= 86400 &&
+             data.mistakes is int && data.mistakes >= 0 && data.mistakes <= 10 &&
+             data.maxMistakes is int && data.maxMistakes >= 1 && data.maxMistakes <= 10 &&
+             data.isCompleted is bool &&
+             data.isPaused is bool &&
+             data.hintsUsed is int && data.hintsUsed >= 0 && data.hintsUsed <= 81;
+    }
+
+    function isValidUserStats(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.gamesPlayed is int && data.gamesPlayed >= 0 &&
+             data.gamesWon is int && data.gamesWon >= 0 &&
+             data.bestTimeSecondsEasy is int && data.bestTimeSecondsEasy >= 0 &&
+             data.bestTimeSecondsMedium is int && data.bestTimeSecondsMedium >= 0 &&
+             data.bestTimeSecondsHard is int && data.bestTimeSecondsHard >= 0 &&
+             data.bestTimeSecondsExpert is int && data.bestTimeSecondsExpert >= 0 &&
+             data.currentStreak is int && data.currentStreak >= 0 &&
+             data.bestStreak is int && data.bestStreak >= 0;
+    }
+
+    match /users/{userId} {
+      allow get, list: if isSignedIn() && request.auth.uid == userId;
+
+      match /games/{gameId} {
+        allow get, list: if isSignedIn() && request.auth.uid == userId;
+
+        allow create: if isSignedIn() &&
+                         request.auth.uid == userId &&
+                         isValidId(gameId) &&
+                         request.resource.data.userId == request.auth.uid &&
+                         request.resource.data.keys().hasAll(['userId', 'difficulty', 'initialBoard', 'currentBoard', 'solution', 'elapsedSeconds', 'mistakes', 'maxMistakes', 'isCompleted', 'isPaused', 'hintsUsed', 'createdAt', 'updatedAt']) &&
+                         request.resource.data.keys().hasOnly(['userId', 'difficulty', 'initialBoard', 'currentBoard', 'solution', 'notes', 'elapsedSeconds', 'mistakes', 'maxMistakes', 'isCompleted', 'isPaused', 'hintsUsed', 'createdAt', 'updatedAt']) &&
+                         request.resource.data.createdAt is timestamp &&
+                         request.resource.data.createdAt <= request.time &&
+                         request.resource.data.updatedAt is timestamp &&
+                         request.resource.data.updatedAt <= request.time &&
+                         isValidGameSession(request.resource.data);
+
+        allow update: if isSignedIn() &&
+                         request.auth.uid == userId &&
+                         isValidId(gameId) &&
+                         request.resource.data.userId == resource.data.userId &&
+                         request.resource.data.createdAt == resource.data.createdAt &&
+                         request.resource.data.updatedAt is timestamp &&
+                         request.resource.data.updatedAt <= request.time &&
+                         isValidGameSession(request.resource.data) &&
+                         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['currentBoard', 'notes', 'elapsedSeconds', 'mistakes', 'isCompleted', 'isPaused', 'hintsUsed', 'updatedAt']);
+
+        allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(gameId);
+      }
+
+      match /stats/{statsId} {
+        allow get, list: if isSignedIn() && request.auth.uid == userId;
+
+        allow create: if isSignedIn() &&
+                         request.auth.uid == userId &&
+                         isValidId(statsId) &&
+                         request.resource.data.userId == request.auth.uid &&
+                         request.resource.data.keys().hasAll(['userId', 'gamesPlayed', 'gamesWon', 'bestTimeSecondsEasy', 'bestTimeSecondsMedium', 'bestTimeSecondsHard', 'bestTimeSecondsExpert', 'currentStreak', 'bestStreak', 'updatedAt']) &&
+                         request.resource.data.keys().hasOnly(['userId', 'gamesPlayed', 'gamesWon', 'bestTimeSecondsEasy', 'bestTimeSecondsMedium', 'bestTimeSecondsHard', 'bestTimeSecondsExpert', 'currentStreak', 'bestStreak', 'updatedAt']) &&
+                         request.resource.data.updatedAt is timestamp &&
+                         request.resource.data.updatedAt <= request.time &&
+                         isValidUserStats(request.resource.data);
+
+        allow update: if isSignedIn() &&
+                         request.auth.uid == userId &&
+                         isValidId(statsId) &&
+                         request.resource.data.userId == resource.data.userId &&
+                         request.resource.data.updatedAt is timestamp &&
+                         request.resource.data.updatedAt <= request.time &&
+                         isValidUserStats(request.resource.data) &&
+                         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['gamesPlayed', 'gamesWon', 'bestTimeSecondsEasy', 'bestTimeSecondsMedium', 'bestTimeSecondsHard', 'bestTimeSecondsExpert', 'currentStreak', 'bestStreak', 'updatedAt']);
+
+        allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(statsId);
+      }
+    }
+  }
+}
