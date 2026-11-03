@@ -30,7 +30,12 @@ jobs:
           cache: 'gradle'
 
       - name: Make Gradlew Executable
-        run: chmod +x gradlew
+        run: |
+          if [ ! -f "gradlew" ]; then
+            echo "gradlew not found. Generating wrapper..."
+            gradle wrapper --gradle-version 8.7 || gradle wrapper
+          fi
+          chmod +x gradlew
 
       - name: Build Debug APK with Gradle Wrapper
         run: ./gradlew assembleDebug --stacktrace
