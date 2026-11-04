@@ -37,6 +37,39 @@ jobs:
           fi
           chmod +x gradlew
 
+      - name: Ensure google-services.json exists
+        run: |
+          if [ ! -f "app/google-services.json" ]; then
+            echo "app/google-services.json not found in runner. Generating configuration..."
+            cat << 'EOF' > app/google-services.json
+          {
+            "project_info": {
+              "project_number": "342174603057",
+              "project_id": "gen-lang-client-0563149064",
+              "storage_bucket": "gen-lang-client-0563149064.firebasestorage.app"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:342174603057:android:2e13bff41513e5e2a8c210",
+                  "android_client_info": {
+                    "package_name": "com.aistudio.sudoku.qrvkz"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [
+                  {
+                    "current_key": "dummy_key"
+                  }
+                ],
+                "services": {}
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
+          fi
+
       - name: Build Debug APK with Gradle Wrapper
         run: ./gradlew assembleDebug --stacktrace
 
